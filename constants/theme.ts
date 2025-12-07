@@ -1,29 +1,50 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * QuietMind Journal App Theme
+ * Minimal, clean, soft journal vibe with pastel colors
  */
 
 import { Platform } from 'react-native';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+// Soft pastel mood colors
+export const MoodColors = {
+  calm: '#A8D5E2',      // Soft blue
+  happy: '#FFE5B4',     // Soft yellow/cream
+  stressed: '#FFB3BA',  // Soft red/pink
+  neutral: '#E8E8E8',   // Soft gray
+};
+
+// Mood emojis
+export const MoodEmojis = {
+  calm: '😌',
+  happy: '😊',
+  stressed: '😰',
+  neutral: '😐',
+};
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+    text: '#2C2C2C',
+    textSecondary: '#666666',
+    background: '#FEFCF8',        // Cream white
+    cardBackground: '#FFFFFF',
+    tint: '#8B9A9C',               // Soft teal
+    icon: '#8B9A9C',
+    border: '#E8E8E8',
+    shadow: 'rgba(0, 0, 0, 0.05)',
+    primary: '#8B9A9C',
+    accent: '#A8D5E2',
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    text: '#F5F5F5',
+    textSecondary: '#B0B0B0',
+    background: '#1A1A1A',
+    cardBackground: '#2C2C2C',
+    tint: '#A8D5E2',
+    icon: '#A8D5E2',
+    border: '#404040',
+    shadow: 'rgba(0, 0, 0, 0.3)',
+    primary: '#A8D5E2',
+    accent: '#8B9A9C',
   },
 };
 

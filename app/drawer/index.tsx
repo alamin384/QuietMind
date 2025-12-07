@@ -1,121 +1,152 @@
+import EntryCard from '@/components/EntryCard';
+import Header from '@/components/Header';
+import { useEntries } from '@/hooks/useEntries';
+import { useFocusEffect } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import React from 'react';
-import { DrawerActions } from '@react-navigation/native';
-import { useNavigation, useRouter } from 'expo-router';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
- 
+import {
+  FlatList,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
 export default function HomeScreen() {
-  const navigation = useNavigation();
-   const router = useRouter();
+  const router = useRouter();
+  const { entries, loading, refreshEntries } = useEntries();
 
-
-  // Temporary mock data (we will replace later)
-  const entries = [
-    { id: '1', mood: '🙂', text: 'Had a calm day today...' },
-    { id: '2', mood: '😐', text: 'Feeling a bit tired but okay.' },
-  ];
+  // Refresh entries when screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      refreshEntries();
+    }, [refreshEntries])
+  );
 
   return (
-    <View style={styles.container}>
-
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>QuietMind</Text>
-
-        {/* FIXED: Open Drawer */}
-        <TouchableOpacity
-          onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-        >
-          <Text style={styles.menu}>☰</Text>
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FEFCF8" />
+      
+      <Header 
+        title="QuietMind" 
+        subtitle={
+          entries.length === 0 
+            ? 'Start your journaling journey' 
+            : `${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`
+        }
+      />
 
       {/* Entry List */}
-      <FlatList
-        data={entries}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.entryCard}>
-            <Text style={styles.mood}>{item.mood}</Text>
-            <Text style={styles.preview}>{item.text}</Text>
+      {loading ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyText}>Loading...</Text>
+        </View>
+      ) : entries.length === 0 ? (
+        <View style={styles.emptyState}>
+          <View style={styles.emptyIconContainer}>
+            <Text style={styles.emptyEmoji}>📔</Text>
           </View>
-        )}
-      />
+          <Text style={styles.emptyTitle}>No entries yet</Text>
+          <Text style={styles.emptyText}>
+            Tap the + button to create your first journal entry
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={entries}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <EntryCard
+              entry={item}
+              onPress={() => router.push({
+                pathname: '/view-entry',
+                params: { id: item.id }
+              })}
+            />
+          )}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
 
       {/* Floating + Button */}
       <TouchableOpacity
-  style={styles.addBtn}
-  onPress={() => router.push('/add-entry')}
->
-  <Text style={styles.addText}>+</Text>
-</TouchableOpacity>
-
-    </View>
+        style={styles.addButton}
+        onPress={() => router.push('/add-entry')}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.addButtonText}>+</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7F8FA',
+    backgroundColor: '#FEFCF8',
+  },
+  listContent: {
     paddingHorizontal: 20,
-    paddingTop: 55,
+    paddingBottom: 100,
   },
-
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 25,
-  },
-
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#222',
-  },
-
-  menu: {
-    fontSize: 28,
-    fontWeight: '600',
-  },
-
-  entryCard: {
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    elevation: 2,
-  },
-
-  mood: {
-    fontSize: 22,
-  },
-
-  preview: {
-    fontSize: 15,
-    color: '#444',
+  emptyState: {
     flex: 1,
-  },
-
-  addBtn: {
-    position: 'absolute',
-    right: 20,
-    bottom: 35,
-    width: 55,
-    height: 55,
-    borderRadius: 30,
-    backgroundColor: '#3C6E71',
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 40,
   },
-
-  addText: {
-    fontSize: 35,
-    color: '#fff',
-    marginTop: -3,
+  emptyIconContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  emptyEmoji: {
+    fontSize: 64,
+  },
+  emptyTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#2C2C2C',
+    marginBottom: 12,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#8B9A9C',
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+  addButton: {
+    position: 'absolute',
+    right: 24,
+    bottom: 32,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#8B9A9C',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  addButtonText: {
+    fontSize: 36,
+    color: '#FFFFFF',
+    fontWeight: '300',
+    marginTop: -4,
   },
 });
