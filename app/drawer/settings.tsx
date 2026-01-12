@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, Swit
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import Header from '@/components/Header';
 
+
 export default function Settings() {
   const colorScheme = useColorScheme();
   const [notifications, setNotifications] = useState(true);
@@ -119,6 +120,7 @@ export default function Settings() {
         </View>
       </ScrollView>
     </SafeAreaView>
+
   );
 }
 

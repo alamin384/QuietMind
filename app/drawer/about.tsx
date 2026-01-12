@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, StatusBar, ScrollView } from 'react-native';
 import Header from '@/components/Header';
+import React from 'react';
+import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 
 export default function About() {
   return (
