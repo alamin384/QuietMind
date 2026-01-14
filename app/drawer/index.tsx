@@ -1,5 +1,7 @@
 import EntryCard from '@/components/EntryCard';
 import Header from '@/components/Header';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useEntries } from '@/hooks/useEntries';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
@@ -17,6 +19,8 @@ import {
 export default function HomeScreen() {
   const router = useRouter();
   const { entries, loading, refreshEntries } = useEntries();
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme];
 
   // Refresh entries when screen comes into focus
   useFocusEffect(
@@ -26,8 +30,8 @@ export default function HomeScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FEFCF8" />
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
       
       <Header 
         title="QuietMind" 
@@ -41,15 +45,15 @@ export default function HomeScreen() {
       {/* Entry List */}
       {loading ? (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyText}>Loading...</Text>
+          <Text style={[styles.emptyText, { color: colors.textSecondary }]}>Loading...</Text>
         </View>
       ) : entries.length === 0 ? (
         <View style={styles.emptyState}>
-          <View style={styles.emptyIconContainer}>
+          <View style={[styles.emptyIconContainer, { backgroundColor: colors.cardBackground, shadowColor: colors.shadow }]}>
             <Text style={styles.emptyEmoji}>📔</Text>
           </View>
-          <Text style={styles.emptyTitle}>No entries yet</Text>
-          <Text style={styles.emptyText}>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>No entries yet</Text>
+          <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
             Tap the + button to create your first journal entry
           </Text>
         </View>
@@ -73,7 +77,7 @@ export default function HomeScreen() {
 
       {/* Floating + Button */}
       <TouchableOpacity
-        style={styles.addButton}
+        style={[styles.addButton, { backgroundColor: colors.primary, shadowColor: colors.shadow }]}
         onPress={() => router.push('/add-entry')}
         activeOpacity={0.8}
       >
@@ -86,7 +90,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FEFCF8',
   },
   listContent: {
     paddingHorizontal: 20,
@@ -102,11 +105,9 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 12,
@@ -118,12 +119,10 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#2C2C2C',
     marginBottom: 12,
   },
   emptyText: {
     fontSize: 16,
-    color: '#8B9A9C',
     textAlign: 'center',
     lineHeight: 24,
   },
@@ -134,10 +133,8 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#8B9A9C',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 12,

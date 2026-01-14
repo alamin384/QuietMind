@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { MoodColors, MoodEmojis } from '@/constants/theme';
+import { MoodColors, MoodEmojis, Colors } from '@/constants/theme';
 import { JournalEntry } from '@/Utils/storage';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 interface EntryCardProps {
   entry: JournalEntry;
@@ -9,6 +10,8 @@ interface EntryCardProps {
 }
 
 export default function EntryCard({ entry, onPress }: EntryCardProps) {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme];
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const today = new Date();
@@ -34,7 +37,7 @@ export default function EntryCard({ entry, onPress }: EntryCardProps) {
 
   return (
     <TouchableOpacity 
-      style={styles.card}
+      style={[styles.card, { backgroundColor: colors.cardBackground, shadowColor: colors.shadow }]}
       onPress={onPress}
       activeOpacity={0.8}
     >
@@ -44,21 +47,21 @@ export default function EntryCard({ entry, onPress }: EntryCardProps) {
             <View 
               style={[
                 styles.moodIndicator, 
-                { backgroundColor: MoodColors[entry.mood] }
+                { backgroundColor: MoodColors[entry.mood], shadowColor: colors.shadow }
               ]}
             />
             <Text style={styles.moodEmoji}>{MoodEmojis[entry.mood]}</Text>
           </View>
-          <Text style={styles.date}>{formatDate(entry.createdAt)}</Text>
+          <Text style={[styles.date, { color: colors.textSecondary }]}>{formatDate(entry.createdAt)}</Text>
         </View>
         
         {entry.title && entry.title !== 'Untitled' && (
-          <Text style={styles.title} numberOfLines={1}>
+          <Text style={[styles.title, { color: colors.text }]} numberOfLines={1}>
             {entry.title}
           </Text>
         )}
         
-        <Text style={styles.preview} numberOfLines={3}>
+        <Text style={[styles.preview, { color: colors.textSecondary }]} numberOfLines={3}>
           {preview || 'No content'}
         </Text>
       </View>
@@ -68,11 +71,9 @@ export default function EntryCard({ entry, onPress }: EntryCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 20,
     marginBottom: 16,
     marginHorizontal: 4,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.08,
     shadowRadius: 12,
@@ -97,7 +98,6 @@ const styles = StyleSheet.create({
     width: 14,
     height: 14,
     borderRadius: 7,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
@@ -108,20 +108,17 @@ const styles = StyleSheet.create({
   },
   date: {
     fontSize: 13,
-    color: '#8B9A9C',
     fontWeight: '600',
     letterSpacing: 0.2,
   },
   title: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#2C2C2C',
     marginBottom: 10,
     letterSpacing: -0.3,
   },
   preview: {
     fontSize: 15,
-    color: '#666666',
     lineHeight: 24,
     letterSpacing: 0.1,
   },

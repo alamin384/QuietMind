@@ -1,8 +1,13 @@
 import { Drawer } from "expo-router/drawer";
 import { Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Colors } from '@/constants/theme';
 
 export default function DrawerLayout() {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme];
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer
@@ -10,12 +15,12 @@ export default function DrawerLayout() {
           headerShown: false,
 
           // Colors
-          drawerActiveTintColor: "#1E1E1E",
-          drawerInactiveTintColor: "#7B8A8C",
+          drawerActiveTintColor: colors.text,
+          drawerInactiveTintColor: colors.textSecondary,
 
           // Drawer container
           drawerStyle: {
-            backgroundColor: "#FAF9F4",
+            backgroundColor: colors.background,
             width: 280,
           },
 
@@ -33,7 +38,7 @@ export default function DrawerLayout() {
             paddingVertical: 6,
           },
 
-          drawerActiveBackgroundColor: "#FFFFFF",
+          drawerActiveBackgroundColor: colors.cardBackground,
           drawerInactiveBackgroundColor: "transparent",
 
           drawerContentStyle: {

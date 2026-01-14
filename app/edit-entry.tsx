@@ -17,6 +17,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useEntries } from '@/hooks/useEntries';
 import MoodSelector from '@/components/MoodSelector';
 import { JournalEntry } from '@/Utils/storage';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Colors } from '@/constants/theme';
 
 type MoodType = 'calm' | 'happy' | 'stressed' | 'neutral';
 
@@ -24,6 +26,8 @@ export default function EditEntry() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { entries, updateEntry } = useEntries();
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme];
   const [entry, setEntry] = useState<JournalEntry | null>(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -72,9 +76,9 @@ export default function EditEntry() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#8B9A9C" />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </SafeAreaView>
     );
@@ -82,11 +86,11 @@ export default function EditEntry() {
 
   if (!entry) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Entry not found</Text>
+          <Text style={[styles.errorText, { color: colors.textSecondary }]}>Entry not found</Text>
           <TouchableOpacity
-            style={styles.backButton}
+            style={[styles.backButton, { backgroundColor: colors.primary }]}
             onPress={() => router.back()}
           >
             <Text style={styles.backButtonText}>Go Back</Text>
@@ -97,29 +101,29 @@ export default function EditEntry() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
         {/* Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
           <TouchableOpacity
             onPress={() => router.back()}
             style={styles.cancelButton}
             activeOpacity={0.7}
           >
-            <Text style={styles.cancelText}>Cancel</Text>
+            <Text style={[styles.cancelText, { color: colors.textSecondary }]}>Cancel</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Edit Entry</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Edit Entry</Text>
           <TouchableOpacity
             onPress={handleSave}
             style={[styles.saveButton, saving && styles.saveButtonDisabled]}
             disabled={saving}
             activeOpacity={0.7}
           >
-            <Text style={[styles.saveText, saving && styles.saveTextDisabled]}>
+            <Text style={[styles.saveText, { color: colors.primary }, saving && styles.saveTextDisabled]}>
               {saving ? 'Saving...' : 'Save'}
             </Text>
           </TouchableOpacity>
@@ -132,17 +136,17 @@ export default function EditEntry() {
           showsVerticalScrollIndicator={false}
         >
           {/* Mood Selector */}
-          <View style={styles.moodSection}>
-            <Text style={styles.sectionLabel}>How are you feeling?</Text>
+          <View style={[styles.moodSection, { backgroundColor: colors.cardBackground }]}>
+            <Text style={[styles.sectionLabel, { color: colors.text }]}>How are you feeling?</Text>
             <MoodSelector selectedMood={mood} onSelect={setMood} variant="emoji" />
           </View>
 
           {/* Title Input */}
           <View style={styles.titleSection}>
             <TextInput
-              style={styles.titleInput}
+              style={[styles.titleInput, { color: colors.text, borderBottomColor: colors.border }]}
               placeholder="Title (optional)"
-              placeholderTextColor="#B0B0B0"
+              placeholderTextColor={colors.textSecondary}
               value={title}
               onChangeText={setTitle}
               maxLength={100}
@@ -152,9 +156,9 @@ export default function EditEntry() {
           {/* Content Input */}
           <View style={styles.contentSection}>
             <TextInput
-              style={styles.contentInput}
+              style={[styles.contentInput, { color: colors.text }]}
               placeholder="Write your thoughts..."
-              placeholderTextColor="#B0B0B0"
+              placeholderTextColor={colors.textSecondary}
               value={content}
               onChangeText={setContent}
               multiline
@@ -171,7 +175,6 @@ export default function EditEntry() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
   keyboardView: {
     flex: 1,
@@ -189,13 +192,11 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 18,
-    color: '#8B9A9C',
     marginBottom: 20,
   },
   backButton: {
     paddingVertical: 12,
     paddingHorizontal: 20,
-    backgroundColor: '#8B9A9C',
     borderRadius: 12,
   },
   backButtonText: {
@@ -210,8 +211,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
-    backgroundColor: '#FFFFFF',
   },
   cancelButton: {
     paddingVertical: 8,
@@ -219,13 +218,11 @@ const styles = StyleSheet.create({
   },
   cancelText: {
     fontSize: 16,
-    color: '#8B9A9C',
     fontWeight: '500',
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#2C2C2C',
   },
   saveButton: {
     paddingVertical: 8,
@@ -236,11 +233,10 @@ const styles = StyleSheet.create({
   },
   saveText: {
     fontSize: 16,
-    color: '#8B9A9C',
     fontWeight: '600',
   },
   saveTextDisabled: {
-    color: '#999',
+    opacity: 0.5,
   },
   scrollView: {
     flex: 1,
@@ -250,14 +246,12 @@ const styles = StyleSheet.create({
   },
   moodSection: {
     marginBottom: 40,
-    backgroundColor: '#FEFCF8',
     borderRadius: 20,
     padding: 24,
   },
   sectionLabel: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#2C2C2C',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -267,10 +261,8 @@ const styles = StyleSheet.create({
   titleInput: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#2C2C2C',
     paddingVertical: 12,
     borderBottomWidth: 2,
-    borderBottomColor: '#F0F0F0',
     letterSpacing: -0.5,
   },
   contentSection: {
@@ -279,7 +271,6 @@ const styles = StyleSheet.create({
   },
   contentInput: {
     fontSize: 18,
-    color: '#2C2C2C',
     lineHeight: 28,
     padding: 0,
     flex: 1,

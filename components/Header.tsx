@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { DrawerActions } from '@react-navigation/native';
 import { useNavigation } from 'expo-router';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Colors } from '@/constants/theme';
 
 interface HeaderProps {
   title: string;
@@ -11,12 +13,14 @@ interface HeaderProps {
 
 export default function Header({ title, subtitle, showMenu = true }: HeaderProps) {
   const navigation = useNavigation();
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme];
 
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, { backgroundColor: colors.background }]}>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>{title}</Text>
-        {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+        <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+        {subtitle && <Text style={[styles.subtitle, { color: colors.textSecondary }]}>{subtitle}</Text>}
       </View>
       
       {showMenu && (
@@ -26,9 +30,9 @@ export default function Header({ title, subtitle, showMenu = true }: HeaderProps
           activeOpacity={0.7}
         >
           <View style={styles.menuIconContainer}>
-            <View style={styles.menuLine} />
-            <View style={styles.menuLine} />
-            <View style={styles.menuLine} />
+            <View style={[styles.menuLine, { backgroundColor: colors.text }]} />
+            <View style={[styles.menuLine, { backgroundColor: colors.text }]} />
+            <View style={[styles.menuLine, { backgroundColor: colors.text }]} />
           </View>
         </TouchableOpacity>
       )}
@@ -44,7 +48,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 16,
     paddingBottom: 24,
-    backgroundColor: '#FEFCF8',
   },
   titleContainer: {
     flex: 1,
@@ -52,13 +55,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#2C2C2C',
     letterSpacing: -0.5,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 15,
-    color: '#8B9A9C',
     fontWeight: '500',
     marginTop: 2,
   },
@@ -75,7 +76,6 @@ const styles = StyleSheet.create({
   menuLine: {
     width: 24,
     height: 2,
-    backgroundColor: '#2C2C2C',
     borderRadius: 1,
   },
 });

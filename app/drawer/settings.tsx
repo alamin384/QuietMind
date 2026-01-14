@@ -1,60 +1,73 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, Switch, ScrollView } from 'react-native';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTheme } from '@/hooks/use-theme';
+import { Colors } from '@/constants/theme';
 import Header from '@/components/Header';
 
 
 export default function Settings() {
   const colorScheme = useColorScheme();
+  const { toggleTheme, setTheme } = useTheme();
   const [notifications, setNotifications] = useState(true);
   const [reminders, setReminders] = useState(false);
   const [biometric, setBiometric] = useState(false);
 
+  const colors = Colors[colorScheme];
+
+  const handleThemeToggle = async (value: boolean) => {
+    const newTheme = value ? 'dark' : 'light';
+    await setTheme(newTheme);
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FEFCF8" />
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
       <Header title="Settings" />
       
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Appearance</Text>
-          <View style={styles.settingCard}>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Appearance</Text>
+          <View style={[styles.settingCard, { backgroundColor: colors.cardBackground }]}>
             <View style={styles.settingItem}>
               <View style={styles.settingLeft}>
                 <Text style={styles.settingIcon}>🎨</Text>
-                <Text style={styles.settingLabel}>Theme</Text>
+                <Text style={[styles.settingLabel, { color: colors.text }]}>Dark Mode</Text>
               </View>
-              <Text style={styles.settingValue}>
-                {colorScheme === 'dark' ? 'Dark' : 'Light'} Mode
-              </Text>
+              <Switch
+                value={colorScheme === 'dark'}
+                onValueChange={handleThemeToggle}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor="#FFFFFF"
+              />
             </View>
           </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Notifications</Text>
-          <View style={styles.settingCard}>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Notifications</Text>
+          <View style={[styles.settingCard, { backgroundColor: colors.cardBackground }]}>
             <View style={styles.settingItem}>
               <View style={styles.settingLeft}>
                 <Text style={styles.settingIcon}>🔔</Text>
-                <Text style={styles.settingLabel}>Enable Notifications</Text>
+                <Text style={[styles.settingLabel, { color: colors.text }]}>Enable Notifications</Text>
               </View>
               <Switch
                 value={notifications}
                 onValueChange={setNotifications}
-                trackColor={{ false: '#E8E8E8', true: '#8B9A9C' }}
+                trackColor={{ false: colors.border, true: colors.primary }}
                 thumbColor="#FFFFFF"
               />
             </View>
-            <View style={[styles.settingItem, styles.settingItemBorder]}>
+            <View style={[styles.settingItem, { borderTopColor: colors.border }, styles.settingItemBorder]}>
               <View style={styles.settingLeft}>
                 <Text style={styles.settingIcon}>⏰</Text>
-                <Text style={styles.settingLabel}>Daily Reminders</Text>
+                <Text style={[styles.settingLabel, { color: colors.text }]}>Daily Reminders</Text>
               </View>
               <Switch
                 value={reminders}
                 onValueChange={setReminders}
-                trackColor={{ false: '#E8E8E8', true: '#8B9A9C' }}
+                trackColor={{ false: colors.border, true: colors.primary }}
                 thumbColor="#FFFFFF"
               />
             </View>
@@ -62,17 +75,17 @@ export default function Settings() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Security</Text>
-          <View style={styles.settingCard}>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Security</Text>
+          <View style={[styles.settingCard, { backgroundColor: colors.cardBackground }]}>
             <View style={styles.settingItem}>
               <View style={styles.settingLeft}>
                 <Text style={styles.settingIcon}>🔐</Text>
-                <Text style={styles.settingLabel}>Biometric Lock</Text>
+                <Text style={[styles.settingLabel, { color: colors.text }]}>Biometric Lock</Text>
               </View>
               <Switch
                 value={biometric}
                 onValueChange={setBiometric}
-                trackColor={{ false: '#E8E8E8', true: '#8B9A9C' }}
+                trackColor={{ false: colors.border, true: colors.primary }}
                 thumbColor="#FFFFFF"
               />
             </View>
@@ -80,41 +93,41 @@ export default function Settings() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Data</Text>
-          <View style={styles.settingCard}>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Data</Text>
+          <View style={[styles.settingCard, { backgroundColor: colors.cardBackground }]}>
             <TouchableOpacity style={styles.settingItem}>
               <View style={styles.settingLeft}>
                 <Text style={styles.settingIcon}>📤</Text>
-                <Text style={styles.settingLabel}>Export Entries</Text>
+                <Text style={[styles.settingLabel, { color: colors.text }]}>Export Entries</Text>
               </View>
-              <Text style={styles.settingArrow}>→</Text>
+              <Text style={[styles.settingArrow, { color: colors.icon }]}>→</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.settingItem, styles.settingItemBorder]}>
+            <TouchableOpacity style={[styles.settingItem, { borderTopColor: colors.border }, styles.settingItemBorder]}>
               <View style={styles.settingLeft}>
                 <Text style={styles.settingIcon}>🔄</Text>
-                <Text style={styles.settingLabel}>Backup & Sync</Text>
+                <Text style={[styles.settingLabel, { color: colors.text }]}>Backup & Sync</Text>
               </View>
-              <Text style={styles.settingArrow}>→</Text>
+              <Text style={[styles.settingArrow, { color: colors.icon }]}>→</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.settingItem}>
               <View style={styles.settingLeft}>
                 <Text style={styles.settingIcon}>🗑️</Text>
                 <Text style={[styles.settingLabel, styles.dangerText]}>Clear All Data</Text>
               </View>
-              <Text style={styles.settingArrow}>→</Text>
+              <Text style={[styles.settingArrow, { color: colors.icon }]}>→</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About</Text>
-          <View style={styles.settingCard}>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>About</Text>
+          <View style={[styles.settingCard, { backgroundColor: colors.cardBackground }]}>
             <View style={styles.settingItem}>
               <View style={styles.settingLeft}>
                 <Text style={styles.settingIcon}>ℹ️</Text>
-                <Text style={styles.settingLabel}>Version</Text>
+                <Text style={[styles.settingLabel, { color: colors.text }]}>Version</Text>
               </View>
-              <Text style={styles.settingValue}>1.0.0</Text>
+              <Text style={[styles.settingValue, { color: colors.textSecondary }]}>1.0.0</Text>
             </View>
           </View>
         </View>
@@ -127,7 +140,6 @@ export default function Settings() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FEFCF8',
   },
   scrollView: {
     flex: 1,
@@ -142,14 +154,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#8B9A9C',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 12,
     marginLeft: 4,
   },
   settingCard: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     overflow: 'hidden',
     shadowColor: '#000',
@@ -166,7 +176,6 @@ const styles = StyleSheet.create({
   },
   settingItemBorder: {
     borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
   },
   settingLeft: {
     flexDirection: 'row',
@@ -178,17 +187,14 @@ const styles = StyleSheet.create({
   },
   settingLabel: {
     fontSize: 16,
-    color: '#2C2C2C',
     fontWeight: '500',
   },
   settingValue: {
     fontSize: 16,
-    color: '#8B9A9C',
     fontWeight: '500',
   },
   settingArrow: {
     fontSize: 20,
-    color: '#8B9A9C',
   },
   dangerText: {
     color: '#FF6B6B',
