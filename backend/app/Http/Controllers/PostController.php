@@ -13,7 +13,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        return response()->json(Post::all());
+        return response()->json(Post::where('user_id', Auth::id())->latest()->get());
     }
 
     /**
@@ -29,6 +29,7 @@ class PostController extends Controller
         $post = Post::create([
             'title' => $request->title,
             'content' => $request->content,
+            'mood' => $request->mood,
             'user_id' => Auth::id(),
         ]);
 
@@ -70,7 +71,7 @@ class PostController extends Controller
             'content' => 'string',
         ]);
 
-        $post->update($request->only('title', 'content'));
+        $post->update($request->only('title', 'content', 'mood'));
 
         return response()->json($post);
     }

@@ -1,15 +1,26 @@
-import { useState, useEffect, useCallback } from 'react';
-import { storage, JournalEntry } from '@/Utils/storage';
+import api from '@/services/api';
+import { JournalEntry } from '@/Utils/storage';
+import { useCallback, useEffect, useState } from 'react';
 
 export function useEntries() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const mapBackendEntry = (entry: any): JournalEntry => ({
+    id: entry.id.toString(),
+    title: entry.title,
+    content: entry.content,
+    mood: entry.mood as any,
+    createdAt: entry.created_at,
+    updatedAt: entry.updated_at,
+  });
+
   const loadEntries = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await storage.getEntries();
-      setEntries(data);
+      const response = await api.get('/posts'); // Using /posts based on current routes
+      const mappedData = response.data.map(mapBackendEntry);
+      setEntries(mappedData);
     } catch (error) {
       console.error('Error loading entries:', error);
     } finally {
@@ -27,7 +38,8 @@ export function useEntries() {
     mood: 'calm' | 'happy' | 'stressed' | 'neutral'
   ) => {
     try {
-      const newEntry = await storage.saveEntry({ title, content, mood });
+      const response = await api.post('/posts', { title, content, mood });
+      const newEntry = mapBackendEntry(response.data);
       setEntries(prev => [newEntry, ...prev]);
       return newEntry;
     } catch (error) {
@@ -38,10 +50,11 @@ export function useEntries() {
 
   const updateEntry = useCallback(async (
     id: string,
-    updates: Partial<Omit<JournalEntry, 'id' | 'createdAt'>>
+    updates: Partial<Omit<JournalEntry, 'id' | 'createdAt' | 'updatedAt'>>
   ) => {
     try {
-      const updated = await storage.updateEntry(id, updates);
+      const response = await api.put(`/posts/${id}`, updates);
+      const updated = mapBackendEntry(response.data);
       if (updated) {
         setEntries(prev => prev.map(e => e.id === id ? updated : e));
       }
@@ -54,11 +67,9 @@ export function useEntries() {
 
   const deleteEntry = useCallback(async (id: string) => {
     try {
-      const success = await storage.deleteEntry(id);
-      if (success) {
-        setEntries(prev => prev.filter(e => e.id !== id));
-      }
-      return success;
+      await api.delete(`/posts/${id}`);
+      setEntries(prev => prev.filter(e => e.id !== id));
+      return true;
     } catch (error) {
       console.error('Error deleting entry:', error);
       return false;

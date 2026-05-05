@@ -1,18 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, Switch, ScrollView } from 'react-native';
+import Header from '@/components/Header';
+import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useTheme } from '@/hooks/use-theme';
-import { Colors } from '@/constants/theme';
-import Header from '@/components/Header';
-
+import { useProfile } from '@/hooks/useProfile';
+import React from 'react';
+import { Alert, SafeAreaView, ScrollView, StatusBar, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 
 export default function Settings() {
   const colorScheme = useColorScheme();
-  const { toggleTheme, setTheme } = useTheme();
-  const [notifications, setNotifications] = useState(true);
-  const [reminders, setReminders] = useState(false);
-  const [biometric, setBiometric] = useState(false);
-
+  const { setTheme } = useTheme();
+  const { exportData, clearAllData } = useProfile();
   const colors = Colors[colorScheme];
 
   const handleThemeToggle = async (value: boolean) => {
@@ -20,11 +17,22 @@ export default function Settings() {
     await setTheme(newTheme);
   };
 
+  const handleClearData = () => {
+    Alert.alert(
+      'Clear All Data',
+      'Are you sure you want to delete all your journal entries? This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Clear All', style: 'destructive', onPress: clearAllData }
+      ]
+    );
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
       <Header title="Settings" />
-      
+
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Appearance</Text>
@@ -45,71 +53,20 @@ export default function Settings() {
         </View>
 
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Notifications</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Data Management</Text>
           <View style={[styles.settingCard, { backgroundColor: colors.cardBackground }]}>
-            <View style={styles.settingItem}>
-              <View style={styles.settingLeft}>
-                <Text style={styles.settingIcon}>🔔</Text>
-                <Text style={[styles.settingLabel, { color: colors.text }]}>Enable Notifications</Text>
-              </View>
-              <Switch
-                value={notifications}
-                onValueChange={setNotifications}
-                trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor="#FFFFFF"
-              />
-            </View>
-            <View style={[styles.settingItem, { borderTopColor: colors.border }, styles.settingItemBorder]}>
-              <View style={styles.settingLeft}>
-                <Text style={styles.settingIcon}>⏰</Text>
-                <Text style={[styles.settingLabel, { color: colors.text }]}>Daily Reminders</Text>
-              </View>
-              <Switch
-                value={reminders}
-                onValueChange={setReminders}
-                trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor="#FFFFFF"
-              />
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Security</Text>
-          <View style={[styles.settingCard, { backgroundColor: colors.cardBackground }]}>
-            <View style={styles.settingItem}>
-              <View style={styles.settingLeft}>
-                <Text style={styles.settingIcon}>🔐</Text>
-                <Text style={[styles.settingLabel, { color: colors.text }]}>Biometric Lock</Text>
-              </View>
-              <Switch
-                value={biometric}
-                onValueChange={setBiometric}
-                trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor="#FFFFFF"
-              />
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Data</Text>
-          <View style={[styles.settingCard, { backgroundColor: colors.cardBackground }]}>
-            <TouchableOpacity style={styles.settingItem}>
+            <TouchableOpacity style={styles.settingItem} onPress={exportData}>
               <View style={styles.settingLeft}>
                 <Text style={styles.settingIcon}>📤</Text>
-                <Text style={[styles.settingLabel, { color: colors.text }]}>Export Entries</Text>
+                <Text style={[styles.settingLabel, { color: colors.text }]}>Export Entries (Excel/CSV)</Text>
               </View>
               <Text style={[styles.settingArrow, { color: colors.icon }]}>→</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.settingItem, { borderTopColor: colors.border }, styles.settingItemBorder]}>
-              <View style={styles.settingLeft}>
-                <Text style={styles.settingIcon}>🔄</Text>
-                <Text style={[styles.settingLabel, { color: colors.text }]}>Backup & Sync</Text>
-              </View>
-              <Text style={[styles.settingArrow, { color: colors.icon }]}>→</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.settingItem}>
+
+            <TouchableOpacity
+              style={[styles.settingItem, { borderTopColor: colors.border }, styles.settingItemBorder]}
+              onPress={handleClearData}
+            >
               <View style={styles.settingLeft}>
                 <Text style={styles.settingIcon}>🗑️</Text>
                 <Text style={[styles.settingLabel, styles.dangerText]}>Clear All Data</Text>
@@ -133,7 +90,6 @@ export default function Settings() {
         </View>
       </ScrollView>
     </SafeAreaView>
-
   );
 }
 
